@@ -3,11 +3,12 @@ import bcrypt from "bcrypt";
 import User from "../models/User.js";
 import Post from "../models/Post.js";
 import Comment from "../models/Comment.js";
+import verifyToken from "../middlewares/verifyToken.js";
 
 const router = express.Router();
 
 // Create comment
-router.post("/create", async (req, res) => {
+router.post("/create", verifyToken, async (req, res) => {
   try {
     const newComment = new Comment(req.body);
     const savedComment = await newComment.save();
@@ -18,7 +19,7 @@ router.post("/create", async (req, res) => {
 });
 
 // Update comment
-router.put("/:id", async (req, res) => {
+router.put("/:id", verifyToken, async (req, res) => {
   try {
     const updatedComment = await Comment.findByIdAndUpdate(
       req.params.id,
@@ -32,7 +33,7 @@ router.put("/:id", async (req, res) => {
 });
 
 // Delete comment
-router.delete("/:id", async (req, res) => {
+router.delete("/:id", verifyToken, async (req, res) => {
   try {
     await Comment.findByIdAndDelete(req.params.id);
     res.status(200).json("Comment has been deleted!");
