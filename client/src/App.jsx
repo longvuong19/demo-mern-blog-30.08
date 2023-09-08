@@ -7,10 +7,11 @@ import PostDetails from "./pages/PostDetails";
 import CreatePost from "./pages/CreatePost";
 import EditPost from "./pages/EditPost";
 import Profile from "./pages/Profile";
+import { UserContextProvider } from "./context/UserContext";
 
 const App = () => {
   return (
-    <div>
+    <UserContextProvider>
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -20,7 +21,7 @@ const App = () => {
         <Route path="/edit/:id" element={<EditPost />} />
         <Route path="/profile/:id" element={<Profile />} />
       </Routes>
-    </div>
+    </UserContextProvider>
   );
 };
 

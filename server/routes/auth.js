@@ -29,9 +29,13 @@ router.post("/login", async (req, res) => {
     const matchPass = await bcrypt.compare(req.body.password, user.password);
     if (!matchPass) return res.status(401).json("Wrong credentials!");
 
-    const token = jwt.sign({ id: user._id }, process.env.SECRET, {
-      expiresIn: "1d",
-    });
+    const token = jwt.sign(
+      { _id: user._id, username: user.username, email: user.email },
+      process.env.SECRET,
+      {
+        expiresIn: "1d",
+      }
+    );
     const { password, ...info } = user._doc;
 
     res.cookie("token", token).status(200).json(info);
@@ -50,6 +54,17 @@ router.get("/logout", async (req, res) => {
   } catch (error) {
     res.status(400).json({ message: error.message });
   }
+});
+
+//Refetch user (prevent automatically logout)
+router.get("/refetch", (req, res) => {
+  const token = req.cookies.token;
+  jwt.verify(token, process.env.SECRET, {}, async (error, data) => {
+    if (error) {
+      return res.status(404).json(error);
+    }
+    res.status(200).json(data);
+  });
 });
 
 export default router;

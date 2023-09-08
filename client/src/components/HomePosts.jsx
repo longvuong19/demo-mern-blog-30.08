@@ -1,30 +1,30 @@
 import React from "react";
 
-const HomePosts = () => {
+/* eslint-disable react/prop-types */
+
+const HomePosts = ({ post }) => {
   return (
     <div className="w-full flex mt-8 space-x-4">
       {/* Left */}
       <div className="w-[35%] h-[200px] flex justify-center items-center">
-        <img
-          src="https://e1.pxfuel.com/desktop-wallpaper/340/855/desktop-wallpaper-6-armored-core-core.jpg"
-          alt=""
-          className="h-full w-full object-cover"
-        />
+        <img src={post.photo} alt="" className="h-full w-full object-cover" />
       </div>
 
       {/* Right */}
       <div className="flex flex-col w-[65%]">
         <h1 className="text-xl font-bold md:mb-b2 mb-1 md:text-2xl">
-          Armored Core 6: Fire Of Rubicon
+          {post.title}
         </h1>
         <div className="flex mb-2 text-sm font-semibold text-gray-500 items-center justify-between md:mb-4">
-          <p>@longvuong</p>
+          <p>@{post.username}</p>
           <div className="flex space-x-2 text-sm">
-            <p>09/01/2023</p>
-            <p>17:00</p>
+            <p>{new Date(post.updatedAt).toString().slice(0, 15)}</p>
+            <p>{new Date(post.updatedAt).toString().slice(16, 24)}</p>
           </div>
         </div>
-        <p className="text-sm md:text-lg">Description</p>
+        <p className="text-sm md:text-lg">
+          {post.description.slice(0, 250) + " ...Read more"}
+        </p>
       </div>
     </div>
   );
