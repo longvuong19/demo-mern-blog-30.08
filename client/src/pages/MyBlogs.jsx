@@ -8,7 +8,7 @@ import { URL } from "../url";
 import { Link, useLocation } from "react-router-dom";
 import { UserContext } from "../context/UserContext";
 
-const Home = () => {
+const MyBlogs = () => {
   const [posts, setPosts] = useState([]);
   const { search } = useLocation();
   // console.log(search);
@@ -20,7 +20,7 @@ const Home = () => {
   const fetchPost = async () => {
     setLoader(true);
     try {
-      const res = await axios.get(URL + "/posts/" + search);
+      const res = await axios.get(URL + `/posts/user/${user._id}`);
       // console.log(res);
       setPosts(res.data);
       if (res.data.length === 0) {
@@ -39,7 +39,7 @@ const Home = () => {
   }, [search]);
 
   return (
-    <>
+    <div>
       <Navbar />
       <div className="px-8 md:px-[200px] min-h-[80vh]">
         {loader ? (
@@ -61,8 +61,8 @@ const Home = () => {
         )}
       </div>
       <Footer />
-    </>
+    </div>
   );
 };
 
-export default Home;
+export default MyBlogs;

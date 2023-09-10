@@ -1,11 +1,23 @@
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { ImCross } from "react-icons/im";
 import Navbar from "../components/Navbar";
 import Footer from "../components/Footer";
+import { UserContext } from "../context/UserContext";
+import axios from "axios";
+import { URL } from "../url";
+import { useNavigate } from "react-router-dom";
 
 const CreatePost = () => {
   const [category, setCategory] = useState("");
   const [categories, setCategories] = useState([]);
+
+  const [title, setTitle] = useState("");
+  const [description, setDescription] = useState("");
+  const [file, setFile] = useState(null);
+
+  const { user } = useContext(UserContext);
+
+  const navigate = useNavigate();
 
   const addCategory = () => {
     let updatedCats = [...categories];
@@ -20,6 +32,42 @@ const CreatePost = () => {
     setCategories(updatedCats);
   };
 
+  const handleCreate = async (e) => {
+    e.preventDefault();
+    const post = {
+      title,
+      description,
+      username: user.username,
+      userId: user._id,
+      categories: categories,
+    };
+    if (file) {
+      const data = new FormData();
+      const fileName = Date.now() + file.name;
+      data.append("img", fileName);
+      data.append("file", file);
+      post.photo = fileName;
+
+      // Upload image
+      try {
+        const imgUpload = await axios.post(URL + "/upload", data);
+        // console.log(imgUpload.data);
+      } catch (error) {
+        console.log(error);
+      }
+    }
+
+    // Upload post
+    try {
+      const res = await axios.post(URL + "/posts/create", post, {
+        withCredentials: true,
+      });
+      navigate("/posts/post/" + res.data._id);
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
   return (
     <div>
       <Navbar />
@@ -27,11 +75,16 @@ const CreatePost = () => {
         <h1 className="font-bold md:text-2xl text-xl">Create a Post</h1>
         <form className="w-full flex flex-col space-y-4 md:space-y-8 mt-4">
           <input
+            onChange={(e) => setTitle(e.target.value)}
             type="text"
             className="px-4 py-2 outline-none"
             placeholder="Enter post title..."
           />
-          <input type="file" className="px-4" />
+          <input
+            onChange={(e) => setFile(e.target.files[0])}
+            type="file"
+            className="px-4"
+          />
           <div className="flex flex-col">
             <div className="flex items-center space-x-4 md:space-x-8">
               <input
@@ -74,8 +127,12 @@ const CreatePost = () => {
             rows={15}
             className="px-4 py-2 outline-none"
             placeholder="Your post..."
+            onChange={(e) => setDescription(e.target.value)}
           ></textarea>
-          <button className="bg-slate-800 w-full md:w-[20%] mx-auto text-white font-semibold px-4 py-2 md:text-xl text-lg">
+          <button
+            onClick={handleCreate}
+            className="bg-slate-800 w-full md:w-[20%] mx-auto text-white font-semibold px-4 py-2 md:text-xl text-lg"
+          >
             Create
           </button>
         </form>
